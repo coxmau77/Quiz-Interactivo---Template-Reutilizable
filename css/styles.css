@@ -1,7 +1,7 @@
 :root {
-    --main-clr: oklch(0.6637 0.152 55.45);
-    --main-clr-light: oklch(0.96921 0.04142 93.66);
-    --main-clr-dark: oklch(0.16962 0.02776 69.95);
+    --main-clr2: rgb(216, 32, 155);
+    --main-clr-light: oklch(90.638% 0.0587 309.778);
+    --main-clr-dark: oklch(13.772% 0.04909 311.232);
 
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
@@ -13,7 +13,9 @@
 }
 
 body {
-    --bg-body: oklch(0.98 0.02 240);
+    /* --bg-body: oklch(var(--main-clr2) / 0.5); */
+    /* Mezclamos un 50% de tu color con un 50% de transparencia */
+    --bg-body: color-mix(in srgb, var(--main-clr2) 20%, transparent);
     --bg-card: oklch(1 0 0 / 0.85);
     --bg-header: oklch(0.95 0.02 240);
     --bg-option: oklch(1 0 0);
@@ -25,14 +27,14 @@ body {
     --bg-progress: oklch(0.9 0.02 240);
     --bg-stat: oklch(0.98 0.02 240);
     --bg-icon: oklch(0.95 0.05 313.41 / 0.1);
-    --bg-btn: var(--main-clr);
+    --bg-btn: var(--main-clr2);
     --bg-btn-hover: oklch(0.55 0.2 313.41);
     --bg-btn-disabled: oklch(0.85 0.02 240);
 
     --text-primary: oklch(0.2 0.02 240);
     --text-secondary: oklch(0.45 0.03 240);
     --text-muted: oklch(0.55 0.03 240);
-    --text-accent: var(--main-clr);
+    --text-accent: var(--main-clr2);
     --text-inverse: oklch(0.98 0.02 240);
     --text-correct: oklch(0.55 0.15 150);
     --text-wrong: oklch(0.55 0.15 15);
@@ -40,7 +42,7 @@ body {
 
     --border-color: oklch(0.85 0.02 240);
     --border-option: oklch(0.8 0.02 240);
-    --border-focus: var(--main-clr);
+    --border-focus: var(--main-clr2);
     --border-correct: oklch(0.5 0.15 150);
     --border-wrong: oklch(0.5 0.15 15);
 
@@ -75,7 +77,7 @@ body.dark {
     --bg-progress: oklch(0.3 0.03 240 / 0.3);
     --bg-stat: oklch(0.3 0.03 240 / 0.8);
     --bg-icon: oklch(0.3 0.06 313.41 / 0.1);
-    --bg-btn: var(--main-clr);
+    --bg-btn: var(--main-clr2);
     --bg-btn-hover: oklch(0.7 0.18 313.41);
     --bg-btn-disabled: oklch(0.25 0.03 240);
 
@@ -105,7 +107,7 @@ body.dark {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--main-clr);
+    background: var(--main-clr2);
     border-radius: 0.25rem;
 }
 
@@ -118,7 +120,7 @@ body.dark ::-webkit-scrollbar-track {
 }
 
 body.dark ::-webkit-scrollbar-thumb {
-    background: var(--main-clr);
+    background: var(--main-clr2);
 }
 
 .container {

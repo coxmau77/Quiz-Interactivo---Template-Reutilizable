@@ -53,7 +53,7 @@ function loadQuizInfo() {
     headerSubtitle.textContent = quizInfo.subtitle;
     welcomeTitle.textContent = quizInfo.welcomeTitle;
     welcomeDescription.textContent = quizInfo.welcomeDescription;
-    document.title = `${quizInfo.welcomeTitle} - ${quizInfo.title}`;
+    document.title = quizInfo.pageTitle;
 }
 
 shuffleQuiz();
