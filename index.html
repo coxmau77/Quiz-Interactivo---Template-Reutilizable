@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Tipos de Datos en Pseudocódigo</title>
+    <link rel="icon" type="image/svg+xml" href="img/favicon-dark.svg" id="favicon-link">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- Repaso primeras clases 3° año PSeudocodigo y Programación
+     https://www.notion.so/U2-Pseudoc-digo-33c02ec95a5c80d8959bcbcbea7e2670
+    -->
+</head>
+
+<body class="dark">
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="header-title">
+                    <h1>Tipos de Datos</h1>
+                    <p>Pseudocódigo y Programación</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="score-box">
+                    <span class="indicator"></span>
+                    <span id="score-counter">0</span>
+                    <span class="label">Aciertos</span>
+                </div>
+                <button id="theme-toggle" class="theme-toggle" title="Cambiar tema">
+                    <svg id="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                    <svg id="sun-icon" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+
+        <main id="welcome-screen" class="content welcome">
+            <div class="welcome-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                </svg>
+            </div>
+            <h2>Quiz: Conceptos Clave</h2>
+            <p>Ponte a prueba con este cuestionario interactivo de 10 preguntas diseñado para dominar los tipos de datos
+                en algoritmos y bases de datos.</p>
+            <button id="start-btn" class="btn">Comenzar Quiz</button>
+        </main>
+
+        <main id="quiz-screen" class="content quiz">
+            <div class="quiz-header">
+                <span id="question-indicator" class="question-indicator">Pregunta 1 de 10</span>
+                <button id="hint-btn" class="hint-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Ver Pista
+                </button>
+            </div>
+
+            <div id="hint-box" class="hint-box">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                    </path>
+                </svg>
+                <div>
+                    <span>Pista útil</span>
+                    <p id="hint-text"></p>
+                </div>
+            </div>
+
+            <h3 id="question-text" class="question-text"></h3>
+
+            <div id="options-container" class="options"></div>
+
+            <div class="quiz-footer">
+                <button id="next-btn" class="btn" disabled>
+                    <span>Comprobar respuesta</span>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </main>
+
+        <main id="result-screen" class="content results">
+            <div id="badge-container" class="badge"></div>
+
+            <h2 id="result-title"></h2>
+            <p id="result-subtitle"></p>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <span>Puntuación</span>
+                    <span id="final-score" class="value score-value">0/10</span>
+                </div>
+                <div class="stat-card">
+                    <span>Efectividad</span>
+                    <span id="final-percent" class="value percent-value">0%</span>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button id="restart-btn" class="btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H18"></path>
+                    </svg>
+                    Reintentar Quiz
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
