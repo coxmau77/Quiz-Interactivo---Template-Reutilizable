@@ -30,6 +30,31 @@ const moonIcon = document.getElementById('moon-icon');
 const sunIcon = document.getElementById('sun-icon');
 const faviconLink = document.getElementById('favicon-link');
 
+const registrationScreen = document.getElementById('registration-screen');
+const userForm = document.getElementById('user-form');
+const userNameInput = document.getElementById('user-name');
+const userEmailInput = document.getElementById('user-email');
+const formError = document.getElementById('form-error');
+const userGreeting = document.getElementById('user-greeting');
+
+let timerInterval = null;
+let startTime = null;
+let elapsedTime = 0;
+
+const timerContainer = document.getElementById('timer-container');
+const timerDisplay = document.getElementById('timer');
+const currentScoreDisplay = document.getElementById('current-score');
+const scoreDisplay = document.getElementById('score-display');
+const userMenuBtn = document.getElementById('user-menu-btn');
+
+const userDialog = document.getElementById('user-dialog');
+const closeDialogBtn = document.getElementById('close-dialog');
+const dialogOverlay = document.querySelector('.dialog-overlay');
+const dialogUserName = document.getElementById('dialog-user-name');
+const dialogUserEmail = document.getElementById('dialog-user-email');
+const resetUserBtn = document.getElementById('reset-user-btn');
+const scoreHistoryList = document.getElementById('score-history-list');
+
 function shuffleArray(array) {
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -37,6 +62,182 @@ function shuffleArray(array) {
         [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
     return newArray;
+}
+
+function getUserFromStorage() {
+    const userData = localStorage.getItem('quizUserData');
+    return userData ? JSON.parse(userData) : null;
+}
+
+function saveUserToStorage(name, email) {
+    const userData = { name, email };
+    localStorage.setItem('quizUserData', JSON.stringify(userData));
+}
+
+function clearAllData() {
+    localStorage.removeItem('quizUserData');
+    localStorage.removeItem('theme');
+    localStorage.removeItem('quizScoreHistory');
+    window.location.reload();
+}
+
+function validateEmail(email) {
+    const allowedDomain = quizUser.allowedDomain;
+    const emailPattern = new RegExp(`^[\\w.-]+@${allowedDomain}$`, 'i');
+    return emailPattern.test(email);
+}
+
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+    const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+    timerDisplay.textContent = `${minutes}:${seconds}`;
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function resetTimer() {
+    stopTimer();
+    elapsedTime = 0;
+    timerDisplay.textContent = "00:00";
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+}
+
+function getScoreHistory() {
+    const history = localStorage.getItem('quizScoreHistory');
+    return history ? JSON.parse(history) : [];
+}
+
+function saveScoreToHistory(score, totalQuestions, timeSpent) {
+    const history = getScoreHistory();
+    const attempt = {
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+        score: score,
+        total: totalQuestions,
+        time: timeSpent
+    };
+    history.push(attempt);
+    if (history.length > 10) {
+        history.shift();
+    }
+    localStorage.setItem('quizScoreHistory', JSON.stringify(history));
+}
+
+function updateScoreDisplay() {
+    scoreDisplay.textContent = `${score}/${quizData.length}`;
+}
+
+function showRegistration() {
+    welcomeScreen.classList.add('hidden');
+    welcomeScreen.classList.remove('active');
+    quizScreen.classList.add('hidden');
+    quizScreen.classList.remove('active');
+    resultScreen.classList.add('hidden');
+    resultScreen.classList.remove('active');
+    registrationScreen.classList.remove('hidden');
+    registrationScreen.classList.add('active');
+}
+
+function showWelcome() {
+    registrationScreen.classList.add('hidden');
+    registrationScreen.classList.remove('active');
+    welcomeScreen.classList.remove('hidden');
+    welcomeScreen.classList.add('active');
+}
+
+userForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = userNameInput.value.trim();
+    const email = userEmailInput.value.trim();
+    
+    if (!name) {
+        formError.textContent = 'Por favor ingresa tu nombre';
+        formError.classList.remove('hidden');
+        return;
+    }
+    
+    if (!validateEmail(email)) {
+        formError.textContent = `El email debe ser del dominio @${quizUser.allowedDomain}`;
+        formError.classList.remove('hidden');
+        return;
+    }
+    
+    formError.classList.add('hidden');
+    saveUserToStorage(name, email);
+    userGreeting.querySelector('.user-name').textContent = `Hola, ${name}`;
+    userGreeting.querySelector('.user-email').textContent = email;
+    userGreeting.classList.remove('hidden');
+    showWelcome();
+});
+
+userMenuBtn.addEventListener('click', function() {
+    const savedUser = getUserFromStorage();
+    if (savedUser) {
+        dialogUserName.textContent = savedUser.name;
+        dialogUserEmail.textContent = savedUser.email;
+    }
+    renderScoreHistory();
+    userDialog.classList.remove('hidden');
+});
+
+const userMenuBtnResults = document.getElementById('user-menu-btn-results');
+if (userMenuBtnResults) {
+    userMenuBtnResults.addEventListener('click', function() {
+        const savedUser = getUserFromStorage();
+        if (savedUser) {
+            dialogUserName.textContent = savedUser.name;
+            dialogUserEmail.textContent = savedUser.email;
+        }
+        renderScoreHistory();
+        userDialog.classList.remove('hidden');
+    });
+}
+
+function closeDialog() {
+    userDialog.classList.add('hidden');
+}
+
+closeDialogBtn.addEventListener('click', closeDialog);
+dialogOverlay.addEventListener('click', closeDialog);
+
+resetUserBtn.addEventListener('click', function() {
+    if (confirm('¿Estás seguro de que deseas reiniciar el usuario? Esto borrará todos los datos y el historial.')) {
+        clearAllData();
+    }
+});
+
+function renderScoreHistory() {
+    const history = getScoreHistory();
+    if (history.length === 0) {
+        scoreHistoryList.innerHTML = '<li class="empty-history">Sin intentos registrados</li>';
+        return;
+    }
+    
+    scoreHistoryList.innerHTML = history.map(attempt => `
+        <li>
+            <span class="attempt-date">${attempt.date}</span>
+            <div>
+                <span class="attempt-score">${attempt.score}/${attempt.total}</span>
+                <span class="attempt-time">(${formatTime(attempt.time)})</span>
+            </div>
+        </li>
+    `).reverse().join('');
 }
 
 function shuffleQuiz() {
@@ -54,10 +255,22 @@ function loadQuizInfo() {
     welcomeTitle.textContent = quizInfo.welcomeTitle;
     welcomeDescription.textContent = quizInfo.welcomeDescription;
     document.title = quizInfo.pageTitle;
+    
+    const savedUser = getUserFromStorage();
+    if (savedUser) {
+        userGreeting.querySelector('.user-name').textContent = `Hola, ${savedUser.name}`;
+        userGreeting.querySelector('.user-email').textContent = savedUser.email;
+        userGreeting.classList.remove('hidden');
+    }
 }
 
 shuffleQuiz();
 loadQuizInfo();
+
+const savedUser = getUserFromStorage();
+if (!savedUser) {
+    showRegistration();
+}
 
 startBtn.addEventListener('click', startQuiz);
 nextBtn.addEventListener('click', handleNextBtnAction);
@@ -106,6 +319,13 @@ function startQuiz() {
     welcomeScreen.classList.remove('active');
     quizScreen.classList.remove('hidden');
     quizScreen.classList.add('active');
+    
+    timerContainer.classList.remove('hidden');
+    currentScoreDisplay.classList.remove('hidden');
+    userMenuBtn.classList.remove('hidden');
+    
+    updateScoreDisplay();
+    startTimer();
     loadQuestion();
 }
 
@@ -199,6 +419,7 @@ function checkAnswer() {
     if (selectedOption.isCorrect) {
         score++;
         scoreCounter.textContent = score;
+        updateScoreDisplay();
         launchConfetti();
     }
 
@@ -264,15 +485,30 @@ function showResults() {
     resultScreen.classList.remove('hidden');
     resultScreen.classList.add('active');
 
+    stopTimer();
+    timerContainer.classList.add('hidden');
+    currentScoreDisplay.classList.add('hidden');
+    userMenuBtn.classList.add('hidden');
+    
+    if (userMenuBtnResults) {
+        userMenuBtnResults.classList.remove('hidden');
+    }
+
     progressBar.style.width = `100%`;
 
     const percent = Math.round((score / quizData.length) * 100);
     document.getElementById('final-score').textContent = `${score}/${quizData.length}`;
     document.getElementById('final-percent').textContent = `${percent}%`;
 
+    saveScoreToHistory(score, quizData.length, elapsedTime);
+
     if (percent >= 60) {
         launchCelebrationConfetti();
     }
+
+    const savedUser = getUserFromStorage();
+    const userName = savedUser ? savedUser.name : 'Usuario';
+    const timeSpent = formatTime(elapsedTime);
 
     const badgeContainer = document.getElementById('badge-container');
     const resultTitle = document.getElementById('result-title');
@@ -285,8 +521,8 @@ function showResults() {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
         `;
-        resultTitle.textContent = "¡Perfecto! Maestro de Datos";
-        resultSubtitle.textContent = "Has contestado de forma impeccable. Ya dominas a la perfección cómo asignar e interpretar tipos de datos en pseudocódigo.";
+        resultTitle.textContent = `¡Felicitaciones, ${userName}!`;
+        resultSubtitle.textContent = `Has obtenido la puntuación perfecta en ${timeSpent}. ¡Excelente trabajo!`;
     } else if (percent >= 70) {
         badgeContainer.className = 'badge excellent';
         badgeContainer.innerHTML = `
@@ -294,8 +530,8 @@ function showResults() {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
         `;
-        resultTitle.textContent = "¡Excelente trabajo!";
-        resultSubtitle.textContent = "Tienes un entendimiento muy sólido sobre los tipos de datos lógicos, numéricos y textuales. ¡Sigue así!";
+        resultTitle.textContent = `¡Excelente trabajo, ${userName}!`;
+        resultSubtitle.textContent = `Has demostrado un gran conocimiento en ${timeSpent}. ¡Sigue así!`;
     } else {
         badgeContainer.className = 'badge good';
         badgeContainer.innerHTML = `
@@ -303,8 +539,8 @@ function showResults() {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
         `;
-        resultTitle.textContent = "Buen intento";
-        resultSubtitle.textContent = "Es un gran comienzo, pero te recomendamos revisar las explicaciones y volver a intentarlo para reforzar tus habilidades algorítmicas.";
+        resultTitle.textContent = `Buen intento, ${userName}`;
+        resultSubtitle.textContent = `Tiempo: ${timeSpent}. Es un gran comienzo. Te recomendamos revisar las explicaciones y volver a intentarlo.`;
     }
 }
 
@@ -317,6 +553,18 @@ function restartQuiz() {
     resultScreen.classList.remove('active');
     quizScreen.classList.remove('hidden');
     quizScreen.classList.add('active');
+    
+    timerContainer.classList.remove('hidden');
+    currentScoreDisplay.classList.remove('hidden');
+    userMenuBtn.classList.remove('hidden');
+    
+    if (userMenuBtnResults) {
+        userMenuBtnResults.classList.add('hidden');
+    }
+    
+    resetTimer();
+    updateScoreDisplay();
+    startTimer();
     loadQuestion();
 }
 

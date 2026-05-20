@@ -6,6 +6,10 @@ const quizInfo = {
     welcomeDescription: "Descripción del quiz que aparece en la pantalla de inicio"
 };
 
+const quizUser = {
+    allowedDomain: "stbrendans.edu.ar"
+};
+
 const quizData = [
     {
         question: "Pregunta de ejemplo 1",

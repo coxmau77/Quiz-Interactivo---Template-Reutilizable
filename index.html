@@ -29,6 +29,10 @@
                 </div>
             </div>
             <div class="header-right">
+                <div id="user-greeting" class="user-greeting hidden">
+                    <span class="user-name"></span>
+                    <span class="user-email"></span>
+                </div>
                 <div class="score-box">
                     <span class="indicator"></span>
                     <span id="score-counter">0</span>
@@ -52,6 +56,30 @@
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
         </div>
+
+        <main id="registration-screen" class="content registration">
+            <div class="registration-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                    </path>
+                </svg>
+            </div>
+            <h2>Bienvenido al Quiz</h2>
+            <p>Ingresa tus datos para comenzar</p>
+            <form id="user-form" class="user-form">
+                <div class="form-group">
+                    <label for="user-name">Nombre completo</label>
+                    <input type="text" id="user-name" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-email">Email institucional</label>
+                    <input type="email" id="user-email" placeholder="nombre@stbrendans.edu.ar" required>
+                </div>
+                <p id="form-error" class="form-error hidden"></p>
+                <button type="submit" class="btn">Comenzar Quiz</button>
+            </form>
+        </main>
 
         <main id="welcome-screen" class="content welcome">
             <div class="welcome-icon">
@@ -95,10 +123,32 @@
             <div id="options-container" class="options"></div>
 
             <div class="quiz-footer">
+                <div class="quiz-footer-left">
+                    <div id="timer-container" class="timer-container hidden">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span id="timer">00:00</span>
+                    </div>
+                    <div id="current-score" class="current-score hidden">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span id="score-display">0/0</span>
+                    </div>
+                </div>
                 <button id="next-btn" class="btn" disabled>
                     <span>Comprobar respuesta</span>
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+                <button id="user-menu-btn" class="user-menu-btn" title="Menú de usuario">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                 </button>
             </div>
@@ -121,16 +171,67 @@
                 </div>
             </div>
 
-            <div class="btn-container">
+            <div class="results-footer">
+                <button id="user-menu-btn-results" class="user-menu-btn hidden" title="Ver historial">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </button>
                 <button id="restart-btn" class="btn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H18"></path>
+                    </svg> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                        <path
+                            d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+                        <path fill-rule="evenodd"
+                            d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
                     </svg>
                     Reintentar Quiz
                 </button>
+
             </div>
         </main>
+    </div>
+
+    <div id="user-dialog" class="user-dialog hidden">
+        <div class="dialog-overlay"></div>
+        <div class="dialog-content">
+            <button id="close-dialog" class="close-dialog" title="Cerrar">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <div class="dialog-header">
+                <div class="dialog-user-avatar">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <h3 id="dialog-user-name"></h3>
+                <p id="dialog-user-email"></p>
+            </div>
+            <div class="dialog-body">
+                <button id="reset-user-btn" class="dialog-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H18"></path>
+                    </svg>
+                    Reiniciar usuario
+                </button>
+                <div class="score-history">
+                    <h4>Historial de intentos</h4>
+                    <ul id="score-history-list" class="score-history-list">
+                        <li class="empty-history">Sin intentos registrados</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/data.js"></script>
