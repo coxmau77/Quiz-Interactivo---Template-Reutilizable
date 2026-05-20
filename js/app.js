@@ -55,6 +55,11 @@ const dialogUserEmail = document.getElementById('dialog-user-email');
 const resetUserBtn = document.getElementById('reset-user-btn');
 const scoreHistoryList = document.getElementById('score-history-list');
 
+const shareDialog = document.getElementById('share-dialog');
+const closeShareDialogBtn = document.getElementById('close-share-dialog');
+const shareDialogOverlay = document.querySelector('.share-dialog-overlay');
+const shareDialogMessage = document.getElementById('share-dialog-message');
+
 function shuffleArray(array) {
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -262,6 +267,35 @@ resetUserBtn.addEventListener('click', function() {
     }
 });
 
+function showShareDialog(message) {
+    shareDialogMessage.textContent = message;
+    shareDialog.classList.remove('hidden');
+}
+
+function closeShareDialog() {
+    shareDialog.classList.add('hidden');
+}
+
+closeShareDialogBtn.addEventListener('click', closeShareDialog);
+shareDialogOverlay.addEventListener('click', closeShareDialog);
+
+document.getElementById('copy-message-btn').addEventListener('click', function() {
+    const message = shareDialogMessage.textContent;
+    navigator.clipboard.writeText(message).then(() => {
+        const btn = this;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            ¡Copiado!
+        `;
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+        }, 2000);
+    });
+});
+
 function renderScoreHistory() {
     const history = getScoreHistory();
     if (history.length === 0) {
@@ -276,15 +310,60 @@ function renderScoreHistory() {
         return a.time - b.time;
     });
     
-    scoreHistoryList.innerHTML = sortedHistory.map(attempt => `
-        <li>
-            <div class="attempt-info">
-                <span class="attempt-date">${attempt.date}</span>
-                <span class="attempt-score">${attempt.score}/${attempt.total}</span>
-            </div>
-            <p class="attempt-message">${attempt.message || ''}</p>
-        </li>
-    `).join('');
+    scoreHistoryList.innerHTML = sortedHistory.map(attempt => {
+        function getLevelBadge(percent) {
+            let level, label;
+            
+            if (percent === 100) {
+                level = 'perfect';
+                label = 'Perfecto';
+            } else if (percent >= 70) {
+                level = 'excellent';
+                label = 'Excelente';
+            } else if (percent >= 60) {
+                level = 'good';
+                label = 'Bueno';
+            } else if (percent >= 30) {
+                level = 'needs-improvement';
+                label = 'Mejorar';
+            } else {
+                level = 'poor';
+                label = 'Bajo';
+            }
+            
+            return `<span class="attempt-badge ${level}">${label}</span>`;
+        }
+        
+        const canShare = attempt.percent >= 70;
+        const shareButton = canShare ? `<button class="share-btn" data-message="${encodeURIComponent(attempt.message)}" title="Compartir">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                </svg>
+            </button>` : '';
+        
+        return `
+            <li>
+                <div class="attempt-info">
+                    <div class="attempt-header">
+                        <span class="attempt-date">${attempt.date}</span>
+                        ${getLevelBadge(attempt.percent)}
+                    </div>
+                    <div class="attempt-actions">
+                        <span class="attempt-score">${attempt.score}/${attempt.total}</span>
+                        ${shareButton}
+                    </div>
+                </div>
+                <p class="attempt-message">${attempt.message || ''}</p>
+            </li>
+        `;
+    }).join('');
+    
+    scoreHistoryList.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const message = decodeURIComponent(this.dataset.message);
+            showShareDialog(message);
+        });
+    });
 }
 
 function shuffleQuiz() {
@@ -560,44 +639,55 @@ function showResults() {
     const resultTitle = document.getElementById('result-title');
     const resultSubtitle = document.getElementById('result-subtitle');
 
+    let levelLabel = '';
     if (percent === 100) {
+        levelLabel = 'PERFECTO';
         badgeContainer.className = 'badge perfect';
         badgeContainer.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
+            <span class="badge-label">${levelLabel}</span>
         `;
         resultTitle.textContent = `¡Felicitaciones, ${userName}!`;
     } else if (percent >= 70) {
+        levelLabel = 'EXCELENTE';
         badgeContainer.className = 'badge excellent';
         badgeContainer.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
+            <span class="badge-label">${levelLabel}</span>
         `;
         resultTitle.textContent = `¡Excelente trabajo, ${userName}!`;
     } else if (percent >= 60) {
+        levelLabel = 'BUENO';
         badgeContainer.className = 'badge good';
         badgeContainer.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
+            <span class="badge-label">${levelLabel}</span>
         `;
         resultTitle.textContent = `Buen intento, ${userName}`;
     } else if (percent >= 30) {
+        levelLabel = 'MEJORAR';
         badgeContainer.className = 'badge needs-improvement';
         badgeContainer.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
+            <span class="badge-label">${levelLabel}</span>
         `;
         resultTitle.textContent = `Sigue intentando, ${userName}`;
     } else {
+        levelLabel = 'BAJO';
         badgeContainer.className = 'badge poor';
         badgeContainer.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
+            <span class="badge-label">${levelLabel}</span>
         `;
         resultTitle.textContent = `Ánimo, ${userName}`;
     }
