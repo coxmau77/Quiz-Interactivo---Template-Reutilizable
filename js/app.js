@@ -123,19 +123,59 @@ function getScoreHistory() {
     return history ? JSON.parse(history) : [];
 }
 
+function getMessageByScore(score, totalQuestions, timeSpent, userName) {
+    const percent = (score / totalQuestions) * 100;
+    const timeFormatted = formatTime(timeSpent);
+    let level, message;
+    
+    if (percent === 100) level = 'perfect';
+    else if (percent >= 70) level = 'excellent';
+    else if (percent >= 60) level = 'good';
+    else if (percent >= 30) level = 'needsImprovement';
+    else level = 'poor';
+    
+    const messages = quizMessages[level];
+    message = messages[Math.floor(Math.random() * messages.length)];
+    
+    const exclamationMatch = message.match(/!|\./);
+    if (exclamationMatch) {
+        const matchIndex = exclamationMatch.index;
+        const afterPunct = message.slice(matchIndex + 1).trim();
+        message = message.slice(0, matchIndex + 1) + ' ' + userName + ', ' + afterPunct;
+    } else {
+        message = message + ', ' + userName;
+    }
+    
+    if (percent >= 70) {
+        message += ` Lo completaste en ${timeFormatted}.`;
+    } else {
+        message += ` Tiempo: ${timeFormatted}.`;
+    }
+    
+    return message;
+}
+
 function saveScoreToHistory(score, totalQuestions, timeSpent) {
+    const percent = (score / totalQuestions) * 100;
+    const savedUser = getUserFromStorage();
+    const userName = savedUser ? savedUser.name : 'Usuario';
+    const message = getMessageByScore(score, totalQuestions, timeSpent, userName);
+    
     const history = getScoreHistory();
     const attempt = {
         date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
         score: score,
         total: totalQuestions,
-        time: timeSpent
+        time: timeSpent,
+        percent: percent,
+        message: message
     };
     history.push(attempt);
     if (history.length > 10) {
         history.shift();
     }
     localStorage.setItem('quizScoreHistory', JSON.stringify(history));
+    return message;
 }
 
 function updateScoreDisplay() {
@@ -229,15 +269,22 @@ function renderScoreHistory() {
         return;
     }
     
-    scoreHistoryList.innerHTML = history.map(attempt => `
+    const sortedHistory = [...history].sort((a, b) => {
+        if (b.percent !== a.percent) {
+            return b.percent - a.percent;
+        }
+        return a.time - b.time;
+    });
+    
+    scoreHistoryList.innerHTML = sortedHistory.map(attempt => `
         <li>
-            <span class="attempt-date">${attempt.date}</span>
-            <div>
+            <div class="attempt-info">
+                <span class="attempt-date">${attempt.date}</span>
                 <span class="attempt-score">${attempt.score}/${attempt.total}</span>
-                <span class="attempt-time">(${formatTime(attempt.time)})</span>
             </div>
+            <p class="attempt-message">${attempt.message || ''}</p>
         </li>
-    `).reverse().join('');
+    `).join('');
 }
 
 function shuffleQuiz() {
@@ -500,8 +547,6 @@ function showResults() {
     document.getElementById('final-score').textContent = `${score}/${quizData.length}`;
     document.getElementById('final-percent').textContent = `${percent}%`;
 
-    saveScoreToHistory(score, quizData.length, elapsedTime);
-
     if (percent >= 60) {
         launchCelebrationConfetti();
     }
@@ -509,6 +554,7 @@ function showResults() {
     const savedUser = getUserFromStorage();
     const userName = savedUser ? savedUser.name : 'Usuario';
     const timeSpent = formatTime(elapsedTime);
+    const resultMessage = getMessageByScore(score, quizData.length, elapsedTime, userName);
 
     const badgeContainer = document.getElementById('badge-container');
     const resultTitle = document.getElementById('result-title');
@@ -522,7 +568,6 @@ function showResults() {
             </svg>
         `;
         resultTitle.textContent = `¡Felicitaciones, ${userName}!`;
-        resultSubtitle.textContent = `Has obtenido la puntuación perfecta en ${timeSpent}. ¡Excelente trabajo!`;
     } else if (percent >= 70) {
         badgeContainer.className = 'badge excellent';
         badgeContainer.innerHTML = `
@@ -531,8 +576,7 @@ function showResults() {
             </svg>
         `;
         resultTitle.textContent = `¡Excelente trabajo, ${userName}!`;
-        resultSubtitle.textContent = `Has demostrado un gran conocimiento en ${timeSpent}. ¡Sigue así!`;
-    } else {
+    } else if (percent >= 60) {
         badgeContainer.className = 'badge good';
         badgeContainer.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -540,8 +584,26 @@ function showResults() {
             </svg>
         `;
         resultTitle.textContent = `Buen intento, ${userName}`;
-        resultSubtitle.textContent = `Tiempo: ${timeSpent}. Es un gran comienzo. Te recomendamos revisar las explicaciones y volver a intentarlo.`;
+    } else if (percent >= 30) {
+        badgeContainer.className = 'badge needs-improvement';
+        badgeContainer.innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        `;
+        resultTitle.textContent = `Sigue intentando, ${userName}`;
+    } else {
+        badgeContainer.className = 'badge poor';
+        badgeContainer.innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        `;
+        resultTitle.textContent = `Ánimo, ${userName}`;
     }
+
+    resultSubtitle.textContent = resultMessage;
+    saveScoreToHistory(score, quizData.length, elapsedTime);
 }
 
 function restartQuiz() {

@@ -1,0 +1,91 @@
+const quizUser = {
+    allowedDomain: "stbrendans.edu.ar"
+};
+
+const quizMessages = {
+    perfect: [
+        "¡Puntuación perfecta! Tu dominio del tema es impeccable.",
+        "¡100% correcto! Has demostrado un conocimiento completo del tema.",
+        "¡Excelente! Has dominado cada aspecto con precisión.",
+        "¡Perfecto! Tu desempeño fue óptimo en cada pregunta.",
+        "¡Increíble! Has respondido correctamente todas las preguntas.",
+        "¡Magnífico! Tu comprensión del tema es total y precisa.",
+        "¡Excepcional! Has alcanzado la puntuación máxima posible.",
+        "¡Fenomenal! Tu rendimiento demuestra un dominio completo.",
+        "¡Impeccable! No hubo errores en ninguna de tus respuestas.",
+        "¡Spléndido! Tu conocimiento del tema es absolutamente sólido.",
+        "¡Perfecto! Cada respuesta demuestra tu preparación.",
+        "¡Asombroso! Has logrado la máxima puntuación.",
+        "¡Brillante! Tu desempeño no tuvo margen de error.",
+        "¡Perfecto! Este resultado refleja tu esfuerzo y dedicación.",
+        "¡Extraordinario! Has dominado el contenido por completo."
+    ],
+    excellent: [
+        "¡Gran trabajo! Tu desempeño fue muy sólido en la mayoría de las preguntas.",
+        "¡Muy bien! Estás muy cerca de la perfección, solo un paso más.",
+        "¡Buen resultado! Tu comprensión del tema es impresionante.",
+        "¡Excelente rendimiento! Continúa así para alcanzar la perfección.",
+        "¡Muy cerca del满分! Solo necesitas un poco más de práctica.",
+        "¡Buen desempeño! Tu conocimiento está muy bien fundamentado.",
+        "¡Buena labor! Estásshowing un gran dominio del tema.",
+        "¡Muy bien hecho! Tu esfuerzo se refleja en este excelente resultado.",
+        "¡Buen trabajo! La práctica te llevará a la perfección.",
+        "¡Gran resultado! Tu comprensión mejora cada vez más.",
+        "¡Buen logro! Estás en el camino correcto hacia el dominio total.",
+        "¡Excelente! Sigue así y alcanzarás la puntuación perfecta.",
+        "¡Buen puntaje! Tu esfuerzo ha dado frutos hervibles.",
+        "¡Bien hecho! Un paso más cerca de la perfección.",
+        "¡Excelente trabajo! Tu dedicación está dando resultados."
+    ],
+    good: [
+        "Buen esfuerzo. Revisa las explicaciones para consolidar tu conocimiento.",
+        "Has avanzado bien. Sigue practicando para mejorar tu puntuación.",
+        "Un comienzo sólido. Con más práctica alcanzarás mejores resultados.",
+        "Buen trabajo. Repasa los temas donde fallaste para entender mejor.",
+        "Vas por buen camino. La práctica constante te ayudará a mejorar.",
+        "Buen intento. Identifica tus debilidades y enfócate en mejorarlas.",
+        "Buen desempeño. Cada error es una oportunidad de aprendizaje.",
+        "Has dado un paso importante. Continúa estudiando para avanzar más.",
+        "Buen resultado parcial. Con más esfuerzo llegarás más lejos.",
+        "Buen inicio. Usa esta experiencia para crecer y mejorar.",
+        "Buen esfuerzo. La clave está en la práctica constante.",
+        "Avanzas bien. Revisa el material para reforzar conceptos.",
+        "Buen camino. Sigue così y verás mejores resultados.",
+        "Has progresado. No te detengas, cada paso cuenta.",
+        "Buena base. Con más estudio profundizarás tu comprensión."
+    ],
+    needsImprovement: [
+        "Necesitas reforzar algunos conceptos. Revisa el material y vuelve a intentar.",
+        "Te recomiendo estudiar más este tema. ¡No te desanimes, puedes mejorar!",
+        "Hay conceptos que debes repasar. Te sugiero revisar las explicaciones.",
+        "Te sugiero revisar las preguntas que fallaste. El camino al éxito requiere práctica.",
+        "Este tema requiere más atención. Te recomiendo volver a estudiar los fundamentos.",
+        "Hay áreas donde debes mejorar. Te animo a seguir intentando.",
+        "Necesitas dedicar más tiempo a este tema. Cada intento te acerca al éxito.",
+        "Es importante que repases los conceptos básicos. ¡Sigue intentando!",
+        "Te recomiendo revisar las explicaciones de cada pregunta. El aprendizaje viene de los errores.",
+        "Hay conceptos clave que debes entender mejor. No te rindas, tú puedes.",
+        "Este resultado indica que hay que estudiar más. Pero no te desanimes, es parte del proceso.",
+        "Necesitas reforzar tu comprensión. Revisa el material y practica más.",
+        "Te sugiero prestar más atención a los fundamentos. ¡ уверен que puedes mejorar!",
+        "Hay aspectos del tema que debes trabajar más. Con esfuerzo lo lograrás.",
+        "Es momento de dedicar más tiempo al estudio. Cada intento te hace mejor."
+    ],
+    poor: [
+        "Te sugiero revisar el material desde el inicio. ¡Puedes hacerlo mejor!",
+        "Este tema requiere más atención. ¡Confío en que puedes mejorar!",
+        "Es momento de volver a estudiar los conceptos básicos. ¡Inténtalo de nuevo!",
+        "Te recomiendo comenzar desde cero. Con dedicación podrás avanzar.",
+        "Este resultado es una oportunidad para empezar de nuevo con más esfuerzo.",
+        "Te sugiero revisar completamente el material. Hay mucho por aprender.",
+        "Es el momento de dedicar más tiempo al estudio. Tú puedes mejorar.",
+        "Necesitas una segunda oportunidad. Vuelve a estudiar y adelante.",
+        "Este resultado te indica que debes empezar de nuevo. ¡No te rindas!",
+        "Te sugiero tomar un descanso y luego volver a intentar con más preparación.",
+        "Es momento de revisar los conceptos más básicos. Poco a poco mejorarás.",
+        "Necesitas refuerza los fundamentos. Todo gran experto empezó desde cero.",
+        "Te recomiendo reiniciar tu proceso de aprendizaje. ¡Tú puedes!",
+        "Este resultado te enseña que hay que empezar desde el principio. Adelante.",
+        "Dedica más tiempo a estudiar. Cada maestro fue alguna vez aprendiz."
+    ]
+};

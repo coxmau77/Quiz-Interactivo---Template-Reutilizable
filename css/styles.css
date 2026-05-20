@@ -1188,6 +1188,18 @@ body.dark .feedback-content p {
     border-color: oklch(0.8 0.1 15 / 0.2);
 }
 
+.badge.needs-improvement {
+    background-color: oklch(0.9 0.1 30 / 0.1);
+    color: oklch(0.7 0.15 30);
+    border-color: oklch(0.8 0.1 30 / 0.2);
+}
+
+.badge.poor {
+    background-color: oklch(0.9 0.1 0 / 0.1);
+    color: oklch(0.7 0.1 0);
+    border-color: oklch(0.8 0.1 0 / 0.2);
+}
+
 .badge svg {
     width: 3rem;
     height: 3rem;
@@ -1519,12 +1531,18 @@ body.dark .feedback-content p {
 
 .score-history-list li {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.5rem;
     padding: 0.75rem;
     background-color: var(--bg-stat);
     border-radius: var(--radius-md);
     font-size: 0.875rem;
+}
+
+.score-history-list .attempt-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .score-history-list .attempt-date {
@@ -1537,11 +1555,14 @@ body.dark .feedback-content p {
     color: var(--score-correct);
 }
 
-.score-history-list .attempt-time {
-    font-weight: 500;
-    color: var(--text-secondary);
+.score-history-list .attempt-message {
     font-size: 0.75rem;
-    margin-left: 0.5rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.4;
+    padding-top: 0.25rem;
+    border-top: 1px solid var(--border-color);
+    margin: 0;
 }
 
 .score-history-list .empty-history {
