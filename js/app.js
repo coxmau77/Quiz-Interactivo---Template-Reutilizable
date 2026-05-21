@@ -403,7 +403,7 @@ nextBtn.addEventListener('click', handleNextBtnAction);
 restartBtn.addEventListener('click', restartQuiz);
 hintBtn.addEventListener('click', toggleHint);
 themeToggle.addEventListener('click', toggleTheme);
-document.getElementById('share-diploma-btn').addEventListener('click', shareDiploma);
+// document.getElementById('share-diploma-btn').addEventListener('click', shareDiploma);
 
 function initTheme() {
     const savedTheme = localStorage.getItem('theme');
@@ -780,60 +780,60 @@ function populateDiploma() {
     }).join('');
 }
 
-function shareDiploma() {
-    const diplomaCard = document.getElementById('diploma-card');
-    const shareBtn = document.getElementById('share-diploma-btn');
-    const shareText = document.getElementById('share-btn-text');
-
-    shareBtn.disabled = true;
-    shareText.textContent = 'Generando...';
-
-    html2canvas(diplomaCard, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: null,
-        logging: false,
-        width: 360,
-        height: 640
-    }).then(canvas => {
-        return new Promise(resolve => {
-            canvas.toBlob(blob => resolve({ blob, canvas }), 'image/png');
-        });
-    }).then(({ blob }) => {
-        const file = new File([blob], 'diploma-quiz.png', { type: 'image/png' });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            return navigator.share({
-                files: [file],
-                title: 'Mi Diploma Digital',
-                text: '¡Mira mi diploma del Quiz!'
-            }).then(() => {
-                shareText.textContent = '¡Compartido!';
-            }).catch(err => {
-                if (err.name === 'AbortError') return;
-                throw err;
-            });
-        }
-
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'diploma-quiz.png';
-        a.click();
-        URL.revokeObjectURL(url);
-        shareText.textContent = '¡Descargado!';
-    }).catch(err => {
-        if (err.name !== 'AbortError') {
-            console.error(err);
-            shareText.textContent = 'Error';
-        }
-    }).finally(() => {
-        shareBtn.disabled = false;
-        setTimeout(() => {
-            shareText.textContent = 'Compartir Diploma';
-        }, 2500);
-    });
-}
+// function shareDiploma() {
+//     const diplomaCard = document.getElementById('diploma-card');
+//     const shareBtn = document.getElementById('share-diploma-btn');
+//     const shareText = document.getElementById('share-btn-text');
+// 
+//     shareBtn.disabled = true;
+//     shareText.textContent = 'Generando...';
+// 
+//     html2canvas(diplomaCard, {
+//         scale: 2,
+//         useCORS: true,
+//         backgroundColor: null,
+//         logging: false,
+//         width: 360,
+//         height: 640
+//     }).then(canvas => {
+//         return new Promise(resolve => {
+//             canvas.toBlob(blob => resolve({ blob, canvas }), 'image/png');
+//         });
+//     }).then(({ blob }) => {
+//         const file = new File([blob], 'diploma-quiz.png', { type: 'image/png' });
+// 
+//         if (navigator.canShare && navigator.canShare({ files: [file] })) {
+//             return navigator.share({
+//                 files: [file],
+//                 title: 'Mi Diploma Digital',
+//                 text: '¡Mira mi diploma del Quiz!'
+//             }).then(() => {
+//                 shareText.textContent = '¡Compartido!';
+//             }).catch(err => {
+//                 if (err.name === 'AbortError') return;
+//                 throw err;
+//             });
+//         }
+// 
+//         const url = URL.createObjectURL(blob);
+//         const a = document.createElement('a');
+//         a.href = url;
+//         a.download = 'diploma-quiz.png';
+//         a.click();
+//         URL.revokeObjectURL(url);
+//         shareText.textContent = '¡Descargado!';
+//     }).catch(err => {
+//         if (err.name !== 'AbortError') {
+//             console.error(err);
+//             shareText.textContent = 'Error';
+//         }
+//     }).finally(() => {
+//         shareBtn.disabled = false;
+//         setTimeout(() => {
+//             shareText.textContent = 'Compartir Diploma';
+//         }, 2500);
+//     });
+// }
 
 function launchConfetti() {
     confetti({
