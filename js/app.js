@@ -403,6 +403,7 @@ nextBtn.addEventListener('click', handleNextBtnAction);
 restartBtn.addEventListener('click', restartQuiz);
 hintBtn.addEventListener('click', toggleHint);
 themeToggle.addEventListener('click', toggleTheme);
+document.getElementById('share-diploma-btn').addEventListener('click', shareDiploma);
 
 function initTheme() {
     const savedTheme = localStorage.getItem('theme');
@@ -623,77 +624,13 @@ function showResults() {
     progressBar.style.width = `100%`;
 
     const percent = Math.round((score / quizData.length) * 100);
-    document.getElementById('final-score').textContent = `${score}/${quizData.length}`;
-    document.getElementById('final-percent').textContent = `${percent}%`;
 
     if (percent >= 60) {
         launchCelebrationConfetti();
     }
 
-    const savedUser = getUserFromStorage();
-    const userName = savedUser ? savedUser.name : 'Usuario';
-    const timeSpent = formatTime(elapsedTime);
-    const resultMessage = getMessageByScore(score, quizData.length, elapsedTime, userName);
-
-    const badgeContainer = document.getElementById('badge-container');
-    const resultTitle = document.getElementById('result-title');
-    const resultSubtitle = document.getElementById('result-subtitle');
-
-    let levelLabel = '';
-    if (percent === 100) {
-        levelLabel = 'PERFECTO';
-        badgeContainer.className = 'badge perfect';
-        badgeContainer.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-            </svg>
-            <span class="badge-label">${levelLabel}</span>
-        `;
-        resultTitle.textContent = `¡Felicitaciones, ${userName}!`;
-    } else if (percent >= 70) {
-        levelLabel = 'EXCELENTE';
-        badgeContainer.className = 'badge excellent';
-        badgeContainer.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="badge-label">${levelLabel}</span>
-        `;
-        resultTitle.textContent = `¡Excelente trabajo, ${userName}!`;
-    } else if (percent >= 60) {
-        levelLabel = 'BUENO';
-        badgeContainer.className = 'badge good';
-        badgeContainer.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
-            <span class="badge-label">${levelLabel}</span>
-        `;
-        resultTitle.textContent = `Buen intento, ${userName}`;
-    } else if (percent >= 30) {
-        levelLabel = 'MEJORAR';
-        badgeContainer.className = 'badge needs-improvement';
-        badgeContainer.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
-            <span class="badge-label">${levelLabel}</span>
-        `;
-        resultTitle.textContent = `Sigue intentando, ${userName}`;
-    } else {
-        levelLabel = 'BAJO';
-        badgeContainer.className = 'badge poor';
-        badgeContainer.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
-            <span class="badge-label">${levelLabel}</span>
-        `;
-        resultTitle.textContent = `Ánimo, ${userName}`;
-    }
-
-    resultSubtitle.textContent = resultMessage;
     saveScoreToHistory(score, quizData.length, elapsedTime);
+    populateDiploma();
 }
 
 function restartQuiz() {
@@ -726,6 +663,176 @@ function toggleHint() {
 
 function getLetter(idx) {
     return String.fromCharCode(65 + idx);
+}
+
+function getAchievementSvg(icon) {
+    const icons = {
+        trophy: '<svg fill="currentColor" viewBox="0 0 16 16"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356a.5.5 0 0 1-.085.987l-1.593.318a.5.5 0 0 1-.166 0l-1.593-.318a.5.5 0 0 1-.085-.987l1.425-.356V10.44c-.955-.234-2.042-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm2.5 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm5.348-2.652a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>',
+        award: '<svg fill="currentColor" viewBox="0 0 16 16"><path d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864 8 0z"/><path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/></svg>',
+        star: '<svg fill="currentColor" viewBox="0 0 16 16"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg>',
+        lightning: '<svg fill="currentColor" viewBox="0 0 16 16"><path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658l-.28.842H9.18L10.613 3.5H13.5a.5.5 0 0 1 .44.736l-7 12a.5.5 0 0 1-.896-.555L7.117 9.5H4.5a.5.5 0 0 1-.474-.658l2-6A.5.5 0 0 1 6.5 2.5h.618l-.992-1.798A.5.5 0 0 1 5.52.359z"/></svg>',
+        fire: '<svg fill="currentColor" viewBox="0 0 16 16"><path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4.5 9.5 3 8 2c-1.5 1-3 2.5-2.25 4.5 0 0-1.5-.5-1.25-2C3 5.5 2 8 2 10.5 2 14 4.686 16 8 16z"/></svg>',
+        flag: '<svg fill="currentColor" viewBox="0 0 16 16"><path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.813-.125-2.648-.43-.613-.224-1.115-.459-1.513-.648-.326-.156-.578-.296-.746-.382a4.036 4.036 0 0 1-.237-.138c-.028-.017-.036-.025-.036-.025v4.985a.5.5 0 1 1-1 0V.5a.5.5 0 0 1 .5-.5c.023 0 .109.037.196.078.126.054.296.125.513.207.436.166.977.337 1.591.414.662.085 1.388.076 2.145-.016.576-.07 1.245-.2 1.94-.464.264-.1.52-.203.74-.33.175-.1.322-.192.418-.262.056-.041.088-.065.1-.077l.01-.008.003-.002A.5.5 0 0 1 14.778.085z"/></svg>'
+    };
+    return icons[icon] || icons.flag;
+}
+
+function populateDiploma() {
+    const savedUser = getUserFromStorage();
+    const userName = savedUser ? savedUser.name : 'Usuario';
+
+    document.getElementById('diploma-name').textContent = userName;
+    document.getElementById('diploma-quiz-title').textContent = quizInfo.title;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    });
+    document.getElementById('diploma-date').textContent = dateStr;
+
+    const percent = Math.round((score / quizData.length) * 100);
+    const scoreEl = document.getElementById('diploma-score');
+    scoreEl.innerHTML = `
+        <span class="diploma-score-value">${score}/${quizData.length}</span>
+        <span class="diploma-score-pct">${percent}%</span>
+    `;
+
+    const titleEl = document.getElementById('diploma-result-title');
+    if (percent === 100) titleEl.textContent = `¡Felicitaciones, ${userName}!`;
+    else if (percent >= 70) titleEl.textContent = `¡Excelente trabajo, ${userName}!`;
+    else if (percent >= 60) titleEl.textContent = `Buen intento, ${userName}`;
+    else if (percent >= 30) titleEl.textContent = `Sigue intentando, ${userName}`;
+    else titleEl.textContent = `Ánimo, ${userName}`;
+
+    document.getElementById('diploma-message').textContent = getMessageByScore(score, quizData.length, elapsedTime, userName);
+
+    function getLevelData(pct) {
+        if (pct === 100) return {
+            cssClass: 'perfect',
+            label: 'PERFECTO',
+            iconSvg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>'
+        };
+        if (pct >= 70) return {
+            cssClass: 'excellent',
+            label: 'EXCELENTE',
+            iconSvg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        };
+        if (pct >= 60) return {
+            cssClass: 'good',
+            label: 'BUENO',
+            iconSvg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+        };
+        if (pct >= 30) return {
+            cssClass: 'needs-improvement',
+            label: 'MEJORAR',
+            iconSvg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+        };
+        return {
+            cssClass: 'poor',
+            label: 'BAJO',
+            iconSvg: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+        };
+    }
+
+    const levelData = getLevelData(percent);
+    const levelEl = document.getElementById('diploma-level');
+    levelEl.className = `diploma-level ${levelData.cssClass}`;
+    document.getElementById('diploma-level-icon').innerHTML = levelData.iconSvg;
+    document.getElementById('diploma-level-label').textContent = levelData.label;
+    const iconContainer = document.getElementById('diploma-icon');
+    iconContainer.innerHTML = levelData.iconSvg;
+    iconContainer.className = `diploma-icon ${levelData.cssClass}`;
+
+    const achievements = [];
+
+    if (percent === 100) {
+        achievements.push({ cssClass: 'perfect', label: 'Perfecto', icon: 'trophy' });
+    } else if (percent >= 70) {
+        achievements.push({ cssClass: 'excellent', label: 'Excelente', icon: 'award' });
+    } else if (percent >= 60) {
+        achievements.push({ cssClass: 'good', label: 'Bueno', icon: 'star' });
+    }
+
+    if (elapsedTime < 120) {
+        achievements.push({ cssClass: 'speed', label: 'Veloz', icon: 'lightning' });
+    }
+
+    const history = getScoreHistory();
+    if (history.length >= 3) {
+        achievements.push({ cssClass: 'persistent', label: 'Persistente', icon: 'fire' });
+    }
+
+    if (achievements.length === 0) {
+        achievements.push({ cssClass: 'default', label: 'Participante', icon: 'flag' });
+    }
+
+    const container = document.getElementById('diploma-achievements');
+    container.innerHTML = achievements.map(a => {
+        const svg = getAchievementSvg(a.icon);
+        return `
+            <div class="achievement-badge">
+                <div class="achievement-icon ${a.cssClass}">${svg}</div>
+                <span class="achievement-label">${a.label}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function shareDiploma() {
+    const diplomaCard = document.getElementById('diploma-card');
+    const shareBtn = document.getElementById('share-diploma-btn');
+    const shareText = document.getElementById('share-btn-text');
+
+    shareBtn.disabled = true;
+    shareText.textContent = 'Generando...';
+
+    html2canvas(diplomaCard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        logging: false,
+        width: 360,
+        height: 640
+    }).then(canvas => {
+        return new Promise(resolve => {
+            canvas.toBlob(blob => resolve({ blob, canvas }), 'image/png');
+        });
+    }).then(({ blob }) => {
+        const file = new File([blob], 'diploma-quiz.png', { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            return navigator.share({
+                files: [file],
+                title: 'Mi Diploma Digital',
+                text: '¡Mira mi diploma del Quiz!'
+            }).then(() => {
+                shareText.textContent = '¡Compartido!';
+            }).catch(err => {
+                if (err.name === 'AbortError') return;
+                throw err;
+            });
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'diploma-quiz.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        shareText.textContent = '¡Descargado!';
+    }).catch(err => {
+        if (err.name !== 'AbortError') {
+            console.error(err);
+            shareText.textContent = 'Error';
+        }
+    }).finally(() => {
+        shareBtn.disabled = false;
+        setTimeout(() => {
+            shareText.textContent = 'Compartir Diploma';
+        }, 2500);
+    });
 }
 
 function launchConfetti() {
