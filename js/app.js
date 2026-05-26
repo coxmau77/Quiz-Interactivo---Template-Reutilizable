@@ -23,6 +23,7 @@ const progressBar = document.getElementById('progress-bar');
 
 const headerTitle = document.querySelector('.header-title h1');
 const headerSubtitle = document.querySelector('.header-title p');
+const headerClassInfo = document.getElementById('header-class-info');
 const welcomeTitle = document.querySelector('.welcome h2');
 const welcomeDescription = document.querySelector('.welcome p');
 
@@ -378,6 +379,7 @@ function shuffleQuiz() {
 function loadQuizInfo() {
     headerTitle.textContent = quizInfo.title;
     headerSubtitle.textContent = quizInfo.subtitle;
+    headerClassInfo.textContent = quizInfo.classInfo;
     welcomeTitle.textContent = quizInfo.welcomeTitle;
     welcomeDescription.textContent = quizInfo.welcomeDescription;
     document.title = quizInfo.pageTitle;
@@ -497,9 +499,6 @@ function loadQuestion() {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
     `;
-
-    const progressPercent = ((currentQuestionIdx) / quizData.length) * 100;
-    progressBar.style.width = `${progressPercent}%`;
 }
 
 function selectOption(idx, optionButton) {
@@ -549,6 +548,9 @@ function checkAnswer() {
         updateScoreDisplay();
         launchConfetti();
     }
+
+    const progressPercent = ((currentQuestionIdx + 1) / quizData.length) * 100;
+    progressBar.style.width = `${Math.min(progressPercent, 100)}%`;
 
     buttons.forEach((btn, i) => {
         const option = currentQuestion.options[i];
@@ -638,6 +640,7 @@ function restartQuiz() {
     currentQuestionIdx = 0;
     score = 0;
     scoreCounter.textContent = "0";
+    progressBar.style.width = "0%";
     resultScreen.classList.add('hidden');
     resultScreen.classList.remove('active');
     quizScreen.classList.remove('hidden');

@@ -2,6 +2,7 @@ const quizInfo = {
     pageTitle: "Quiz: Título del Tema del Quiz",
     title: "Título Principal",
     subtitle: "Subtítulo o descripción breve",
+    classInfo: "4° Año - Materia: Nombre de la Materia",
     welcomeTitle: "Título de la pantalla de inicio",
     welcomeDescription: "Descripción del quiz que aparece en la pantalla de inicio"
 };

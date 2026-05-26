@@ -22,22 +22,10 @@ Solo necesitas editar `js/data.js`:
 const quizInfo = {
     title: "Título del Quiz",
     subtitle: "Subtítulo o descripción breve",
+    classInfo: "Curso y materia (opcional)",
     welcomeTitle: "Título de la pantalla de inicio",
     welcomeDescription: "Descripción del quiz en la pantalla de inicio"
 };
-
-const quizData = [
-    {
-        question: "Tu pregunta aquí",
-        hint: "Pista para el usuario",
-        options: [
-            { text: "Opción 1", isCorrect: false, rationale: "Explicación" },
-            { text: "Opción 2", isCorrect: true, rationale: "Explicación" },
-            { text: "Opción 3", isCorrect: false, rationale: "Explicación" },
-            { text: "Opción 4", isCorrect: false, rationale: "Explicación" }
-        ]
-    }
-];
 ```
 
 ### Estructura de quizInfo
@@ -46,6 +34,7 @@ const quizData = [
 |-------|------|-------------|
 | `title` | string | Título que aparece en el header |
 | `subtitle` | string | Subtítulo que aparece en el header |
+| `classInfo` | string | Información de la clase/curso (opcional) |
 | `welcomeTitle` | string | Título grande en la pantalla de inicio |
 | `welcomeDescription` | string | Descripción en la pantalla de inicio |
 
@@ -74,6 +63,7 @@ Estructura requerida:
 const quizInfo = {
     title: "Título del tema",
     subtitle: "Subtítulo breve",
+    classInfo: "Curso y materia (opcional)",
     welcomeTitle: "Título de bienvenida",
     welcomeDescription: "Descripción del quiz (1-2 oraciones)"
 };
